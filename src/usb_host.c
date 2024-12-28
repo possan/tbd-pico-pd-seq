@@ -10,6 +10,7 @@
 #include "pio_usb.h"
 #include "tusb.h"
 #include "usb_midi_host.h"
+#include "tbd.h"
 
 // USB MIDI Host
 #define USBA_PWR_ENA_GPIO 24
@@ -38,26 +39,22 @@ void usbhost_init()
   // printf("Initializing usb host.\n");
 
   // Enable USB-A
-  // printf("enabling usb-a\r\n");
-  // gpio_init(USBA_PWR_ENA_GPIO);
-  // gpio_set_dir(USBA_PWR_ENA_GPIO, GPIO_OUT);
-  // gpio_put(USBA_PWR_ENA_GPIO, 1);
-  // gpio_init(USBA_SEL_GPIO);
-  // gpio_set_dir(USBA_SEL_GPIO, GPIO_OUT);
-  // gpio_put(USBA_SEL_GPIO, 1);
+  printf("enabling usb-a\r\n");
+  gpio_init(USBA_PWR_ENA_GPIO);
+  gpio_set_dir(USBA_PWR_ENA_GPIO, GPIO_OUT);
+  gpio_put(USBA_PWR_ENA_GPIO, 1);
+  gpio_init(USBA_SEL_GPIO);
+  gpio_set_dir(USBA_SEL_GPIO, GPIO_OUT);
+  gpio_put(USBA_SEL_GPIO, 1);
 
-  // printf("enabling tiny-usb\n");
-  // tusb_init();
-  // sleep_ms(100);
+  printf("enabling tiny-usb\n");
+  tusb_init();
+  sleep_ms(100);
 }
 
 void usbhost_tick()
 {
-  // tuh_task();
-
-  // tuh_task();
-  //   USBHost.task();
-  //   bool connected = midi_dev_addr != 0 && tuh_midi_configured(midi_dev_addr);
+  tuh_task();
 }
 
 //--------------------------------------------------------------------+

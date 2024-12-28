@@ -49,6 +49,10 @@
 #define CFG_TUSB_OS                 OPT_OS_NONE
 #endif
 
+// TODO Do we need this?
+//#if CFG_TUSB_MCU == OPT_MCU_RP2040
+//#define PICO_RP2040_USB_FAST_IRQ 1
+//#endif
 // CFG_TUSB_DEBUG is defined by compiler in DEBUG build
 // #define CFG_TUSB_DEBUG           0
 
@@ -70,9 +74,6 @@
 //--------------------------------------------------------------------
 // CONFIGURATION
 //--------------------------------------------------------------------
-// Enable host stack with pio-usb if Pico-PIO-USB library is available
-#define CFG_TUH_ENABLED     1
-#define CFG_TUH_RPI_PIO_USB 1
 
 // Size of buffer to hold descriptors and other data used for enumeration
 #define CFG_TUH_ENUMERATION_BUFSIZE 256
@@ -87,15 +88,8 @@
 // max device support (excluding hub device)
 #define CFG_TUH_DEVICE_MAX          (CFG_TUH_HUB ? 4 : 1) // hub typically has 4 ports
 
-// The PIO USB Host is on port 1
-#define BOARD_TUH_RHPORT            1
 // MIDI Host string support
 #define CFG_MIDI_HOST_DEVSTRINGS 1
-
-// This will work for the hardware described in the usb_midi_host project README.md
-// file and for the Adafruit RP2040 Feather with USB A Host board (see
-// https://learn.adafruit.com/adafruit-feather-rp2040-with-usb-type-a-host)
-#define USE_ADAFRUIT_FEATHER_RP2040_USBHOST 1
 
 #ifdef __cplusplus
  }
