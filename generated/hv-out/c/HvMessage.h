@@ -151,7 +151,9 @@ static inline void msg_setSymbol(HvMessage *m, int index, const char *s) {
   (&(m->elem)+index)->data.s = s;
   // NOTE(mhroth): if the same message container is reused and string reset,
   // then the message size will be overcounted
-  m->numBytes += (hv_uint16_t) (hv_strlen(s) + 1); // also count '\0'
+  uint32_t symbolsize = (hv_uint16_t) hv_strlen(s) + 1;
+  symbolsize = hv_align_size(symbolsize);
+  m->numBytes += symbolsize; // (hv_uint16_t) (hv_strlen(s) + 1); // also count '\0'
 }
 
 static inline const char *msg_getSymbol(const HvMessage *m, int index) {

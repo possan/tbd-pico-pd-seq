@@ -42,7 +42,9 @@ HvMessage *msg_initWithBang(HvMessage *m, hv_uint32_t timestamp) {
 HvMessage *msg_initWithSymbol(HvMessage *m, hv_uint32_t timestamp, const char *s) {
   m->timestamp = timestamp;
   m->numElements = 1;
-  m->numBytes = sizeof(HvMessage) + (hv_uint16_t) hv_strlen(s);
+  uint32_t symbolsize = (hv_uint16_t) hv_strlen(s);
+  symbolsize = hv_align_size(symbolsize);
+  m->numBytes = sizeof(HvMessage) + symbolsize;
   msg_setSymbol(m, 0, s);
   return m;
 }
@@ -58,7 +60,11 @@ HvMessage *msg_initWithHash(HvMessage *m, hv_uint32_t timestamp, hv_uint32_t h) 
 void msg_copyToBuffer(const HvMessage *m, char *buffer, hv_size_t len) {
   HvMessage *r = (HvMessage *) buffer;
 
+  hv_assert_aligned(m);
+  hv_assert_aligned(buffer);
+
   hv_size_t len_r = msg_getCoreSize(msg_getNumElements(m));
+ len_r = hv_align_size(len_r);
 
   // assert that the message is not already larger than the length of the buffer
   hv_assert(len_r <= len);
@@ -69,9 +75,10 @@ void msg_copyToBuffer(const HvMessage *m, char *buffer, hv_size_t len) {
   char *p = buffer + len_r; // points to the end of the base message
   for (int i = 0; i < msg_getNumElements(m); ++i) {
     if (msg_isSymbol(m,i)) {
-      const hv_size_t symLen = (hv_size_t) hv_strlen(msg_getSymbol(m,i)) + 1; // include the trailing null char
+      hv_size_t symLen = (hv_size_t) hv_strlen(msg_getSymbol(m,i)) + 1; // include the trailing null char
       hv_assert(len_r + symLen <= len); // stay safe!
       hv_strncpy(p, msg_getSymbol(m,i), symLen);
+      symLen = hv_align_size(symLen);
       msg_setSymbol(r, i, p);
       p += symLen;
       len_r += symLen;

@@ -52,3 +52,62 @@ hv_uint32_t hv_string_to_hash(const char *str) {
   x ^= (x >> 15);
   return x;
 }
+
+void hv_assert_aligned(void *ptr) {
+  #if FORCE_MEMORY_ALIGNMENT_BITS > 0
+
+  uint32_t addr = (uint32_t) ptr;
+  uint16_t bytes = (FORCE_MEMORY_ALIGNMENT_BITS / 8);
+  #if FORCE_MEMORY_ALIGNMENT_BITS == 32
+  uint16_t shift = 2;
+  #elif FORCE_MEMORY_ALIGNMENT_BITS == 16
+  uint16_t shift = 1;
+  #else
+  uint16_t shift = 0;
+  #endif
+  uint32_t aligned = ((addr >> shift) + 0) << shift;
+  if (addr != aligned) {
+    printf("hv_assert_aligned, alignment=%d, shift=%d, addr=%X, aligned=%X\n", FORCE_MEMORY_ALIGNMENT_BITS, shift, addr, aligned);
+  }
+  hv_assert(addr == aligned);
+  #endif
+}
+
+void *hv_align_pointer(void *input) {
+  #if FORCE_MEMORY_ALIGNMENT_BITS > 0
+
+  return input;
+
+  #else
+
+  return input;
+
+  #endif
+}
+
+uint32_t hv_align_size(uint32_t inputsize) {
+  #if FORCE_MEMORY_ALIGNMENT_BITS > 0
+
+  #if FORCE_MEMORY_ALIGNMENT_BITS == 32
+  uint16_t shift = 2;
+  uint16_t offset = 3;
+  #elif FORCE_MEMORY_ALIGNMENT_BITS == 16
+  uint16_t shift = 1;
+  uint16_t offset = 1;
+  #else
+  uint16_t shift = 0;
+  uint16_t offset = 0;
+  #endif
+
+  uint32_t aligned = ((inputsize + offset) >> shift) << shift;
+  return aligned;
+
+  #else
+
+  return inputsize;
+
+  #endif
+}
+
+
+
