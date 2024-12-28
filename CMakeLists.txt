@@ -40,6 +40,7 @@ add_executable(tbdpicoseq
     src/display.c
     src/i2c.c
     src/leds.c
+    src/uart_midi.c
     src/main.c
     src/pd_seq.c
     src/tbd.c
@@ -55,6 +56,7 @@ target_link_libraries(tbdpicoseq LINK_PUBLIC
     pico_sync
     hardware_i2c
     hardware_spi
+    hardware_dma
     hardware_pio
     hardware_watchdog
     hardware_exception

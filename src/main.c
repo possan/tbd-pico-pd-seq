@@ -69,12 +69,14 @@ void core0_entrypoint()
     sleep_us(100);
 
     tbd_init();
-    usbhost_init();
+    uartmidi_init();
 
     ui_init();
     leds_init();
     display_init();
     pd_init();
+
+    usbhost_init();
 
     printf("Core 0 started.\n");
  
@@ -92,6 +94,7 @@ void core0_entrypoint()
 
         tbd_tick();
         usbhost_tick();
+        uartmidi_tick();
 
         ui_tick();
         pd_tick();

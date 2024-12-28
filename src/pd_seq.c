@@ -36,13 +36,13 @@ void sendhook(HeavyContextInterface *context, const char *sendName, hv_uint32_t 
 
         if (vel > 0)
         {
-            midibuf[0] = 0x80 | chan;
+            midibuf[0] = 0x90 | chan;
             midibuf[1] = note;
             midibuf[2] = vel;
         }
         else
         {
-            midibuf[0] = 0x90 | chan;
+            midibuf[0] = 0x80 | chan;
             midibuf[1] = note;
             midibuf[2] = 0;
         }
@@ -178,23 +178,23 @@ void pd_send_knobturn(uint8_t index, int16_t delta)
     HvMessage *msg1 = (HvMessage *)hv_alloca(hv_msg_getByteSize(3));
     hv_msg_init(msg1, 3, 0);
     hv_msg_setSymbol(msg1, 0, "turn");
-    // hv_msg_setFloat(msg1, 1, index);
-    if (index == 0)
-    {
-        hv_msg_setSymbol(msg1, 1, "knob0");
-    }
-    else if (index == 1)
-    {
-        hv_msg_setSymbol(msg1, 1, "knob1");
-    }
-    else if (index == 2)
-    {
-        hv_msg_setSymbol(msg1, 1, "knob2");
-    }
-    else // if (index == 3)
-    {
-        hv_msg_setSymbol(msg1, 1, "knob3");
-    }
+    hv_msg_setFloat(msg1, 1, index);
+    // if (index == 0)
+    // {
+    //     hv_msg_setSymbol(msg1, 1, "knob0");
+    // }
+    // else if (index == 1)
+    // {
+    //     hv_msg_setSymbol(msg1, 1, "knob1");
+    // }
+    // else if (index == 2)
+    // {
+    //     hv_msg_setSymbol(msg1, 1, "knob2");
+    // }
+    // else // if (index == 3)
+    // {
+    //     hv_msg_setSymbol(msg1, 1, "knob3");
+    // }
     hv_msg_setFloat(msg1, 2, delta);
     hv_sendMessageToReceiver(hvy, hash, 0, msg1);
 }
