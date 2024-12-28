@@ -5,20 +5,19 @@ include(pico_sdk_import.cmake)
 
 project(tbdpicoseq)
 
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/test2.pd
-  ${CMAKE_CURRENT_BINARY_DIR}/test2.pd
-)
+# configure_file(
+#   ${CMAKE_CURRENT_SOURCE_DIR}/test2.pd
+#   ${CMAKE_CURRENT_BINARY_DIR}/test2.pd
+# )
 
-execute_process(
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND hvcc -o hv-out -n sequencerpatch test2.pd
-)
-
+# execute_process(
+#     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#     COMMAND hvcc -o ${CMAKE_CURRENT_SOURCE_DIR}/generated/hv-out -n sequencerpatch test2.pd
+# )
 
 add_subdirectory(lib/usb_midi_host)
 
-FILE(GLOB HEAVY_SRC_FILES ${CMAKE_CURRENT_BINARY_DIR}/hv-out/c/*)
+FILE(GLOB HEAVY_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/generated/hv-out/c/*)
 
 pico_sdk_init()
 
@@ -33,7 +32,7 @@ include_directories(
     tbdpicoseq
     gen/c
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_BINARY_DIR}/hv-out/c
+    ${CMAKE_CURRENT_SOURCE_DIR}/generated/hv-out/c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/usb_midi_host
 )
 
