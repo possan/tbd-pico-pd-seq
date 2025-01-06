@@ -52,7 +52,7 @@ uint16_t _get_knob_delta_from_values(int32_t lastvalue, int32_t newvalue)
       ret = newvalue - lastvalue;
    }
 
-   printf("_get_knob_delta_from_values %d to %d (dist %d) ---> %d\n", lastvalue, newvalue, dist, ret);
+   // printf("_get_knob_delta_from_values %d to %d (dist %d) ---> %d\n", lastvalue, newvalue, dist, ret);
 
    return ret;
 }
@@ -86,7 +86,7 @@ void ui_tick()
    {
       if (ui_data.pot_positions[i] != last_ui_data2.pot_positions[i])
       {
-         printf("UI: Pot %d changed value: %d -> %d\n", i, last_ui_data2.pot_positions[i], ui_data.pot_positions[i]);
+         // printf("UI: Pot %d changed value: %d -> %d\n", i, last_ui_data2.pot_positions[i], ui_data.pot_positions[i]);
 
          int16_t delta = _get_knob_delta_from_values(last_ui_data2.pot_positions[i], ui_data.pot_positions[i]);
          pd_send_knobturn(3 - i, delta);
@@ -98,7 +98,7 @@ void ui_tick()
 
    if (ui_data.f_btns != last_ui_data2.f_btns)
    {
-      printf("UI: f_btns changed value: %d -> %d\n", last_ui_data2.f_btns, ui_data.f_btns);
+      // printf("UI: f_btns changed value: %d -> %d\n", last_ui_data2.f_btns, ui_data.f_btns);
 
       for (int i = 0; i < 4; i++)
       {
@@ -116,7 +116,7 @@ void ui_tick()
 
    if (ui_data.f_btns_long_press != last_ui_data2.f_btns_long_press)
    {
-      printf("UI: f_btns_long_press changed value: %d -> %d\n", last_ui_data2.f_btns_long_press, ui_data.f_btns_long_press);
+      // printf("UI: f_btns_long_press changed value: %d -> %d\n", last_ui_data2.f_btns_long_press, ui_data.f_btns_long_press);
 
       for (int i = 0; i < 4; i++)
       {
@@ -125,7 +125,7 @@ void ui_tick()
          int newbit = (ui_data.f_btns_long_press & bitmask) > 0;
          if (newbit != oldbit)
          {
-            printf("  bit %d changed value: %d -> %d\n", i, oldbit, newbit);
+            // printf("  bit %d changed value: %d -> %d\n", i, oldbit, newbit);
             if (newbit)
             {
                pd_send_funcbutton(i, button_longpress);
@@ -138,7 +138,7 @@ void ui_tick()
 
    if (ui_data.d_btns != last_ui_data2.d_btns)
    {
-      printf("UI: d_btns changed value: %d -> %d\n", last_ui_data2.d_btns, ui_data.d_btns);
+      // printf("UI: d_btns changed value: %d -> %d\n", last_ui_data2.d_btns, ui_data.d_btns);
       for (int i = 0; i < 16; i++)
       {
          int bitmask = 1 << i;
@@ -146,7 +146,7 @@ void ui_tick()
          int newbit = (ui_data.d_btns & bitmask) > 0;
          if (newbit != oldbit)
          {
-            printf("  bit %d changed value: %d -> %d\n", i, oldbit, newbit);
+            // printf("  bit %d changed value: %d -> %d\n", i, oldbit, newbit);
             pd_send_stepbutton(i, newbit ? button_press : button_release);
          }
       }
@@ -155,7 +155,7 @@ void ui_tick()
 
    if (ui_data.d_btns_long_press != last_ui_data2.d_btns_long_press)
    {
-      printf("UI: d_btns_long_press changed value: %d -> %d\n", last_ui_data2.d_btns_long_press, ui_data.d_btns_long_press);
+      // printf("UI: d_btns_long_press changed value: %d -> %d\n", last_ui_data2.d_btns_long_press, ui_data.d_btns_long_press);
       for (int i = 0; i < 16; i++)
       {
          int bitmask = 1 << i;
@@ -163,7 +163,7 @@ void ui_tick()
          int newbit = (ui_data.d_btns_long_press & bitmask) > 0;
          if (newbit != oldbit)
          {
-            printf("  bit %d changed value: %d -> %d\n", i, oldbit, newbit);
+            // printf("  bit %d changed value: %d -> %d\n", i, oldbit, newbit);
             if (newbit)
             {
                pd_send_stepbutton(i, button_longpress);
@@ -175,7 +175,7 @@ void ui_tick()
 
    if (ui_data.encoder_state != last_ui_data2.encoder_state)
    {
-      printf("UI: encoder_state changed value: %d -> %d\n", last_ui_data2.encoder_state, ui_data.encoder_state);
+      // printf("UI: encoder_state changed value: %d -> %d\n", last_ui_data2.encoder_state, ui_data.encoder_state);
       for (int i = 0; i < 5; i++)
       {
          int bitmask = 1 << i;
@@ -183,7 +183,7 @@ void ui_tick()
          int newbit = (ui_data.encoder_state & bitmask) > 0;
          if (newbit != oldbit)
          {
-            printf("  bit %d changed value: %d -> %d\n", i, oldbit, newbit);
+            // printf("  bit %d changed value: %d -> %d\n", i, oldbit, newbit);
          }
       }
 
@@ -192,7 +192,7 @@ void ui_tick()
       int newpressbit = (ui_data.encoder_state & bitmask) > 0;
       if (newpressbit != oldpressbit)
       {
-         printf("  press bit changed value: %d -> %d\n", oldpressbit, newpressbit);
+         // printf("  press bit changed value: %d -> %d\n", oldpressbit, newpressbit);
          pd_send_navbutton(newpressbit ? button_press : button_release);
       }
 
@@ -201,7 +201,7 @@ void ui_tick()
       int newrightbit = (ui_data.encoder_state & bitmask) > 0;
       if (newrightbit != oldrightbit)
       {
-         printf("  right bit changed value: %d -> %d\n", oldrightbit, newrightbit);
+         // printf("  right bit changed value: %d -> %d\n", oldrightbit, newrightbit);
          if (newrightbit)
          {
             pd_send_navturn(1);
@@ -213,7 +213,7 @@ void ui_tick()
       int newleftbit = (ui_data.encoder_state & bitmask) > 0;
       if (newleftbit != oldleftbit)
       {
-         printf("  left bit changed value: %d -> %d\n", oldleftbit, newleftbit);
+         // printf("  left bit changed value: %d -> %d\n", oldleftbit, newleftbit);
          if (newleftbit)
          {
             pd_send_navturn(-1);
