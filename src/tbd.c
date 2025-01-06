@@ -183,6 +183,10 @@ void tbd_tick()
     printf("ws counter %d, midi tx counter %d\n", ws_counter, midi_counter_tx);
 }
 
+void tbd_queue_midi(uint8_t *buffer, uint8_t length) {
+    
+}
+
 void tbd_send_midi(uint8_t *buffer, uint8_t length)
 {
     midi_counter_tx += length;

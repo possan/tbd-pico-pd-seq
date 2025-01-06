@@ -8,6 +8,7 @@
 #include <HvMessage.h>
 
 #include "pico/stdlib.h"
+#include "pico/util/queue.h"
 #include "pd_seq.h"
 #include "leds.h"
 #include "tbd.h"
@@ -15,7 +16,13 @@
 HeavyContextInterface *hvy;
 float inputbuffer[2][100];
 float outputbuffer[2][100];
-uint32_t lastpotvalue[4] = {0, 0, 0, 0};
+queue_t pd_input_queue;
+queue_t ws_irq_msg_q_sync_i2c;
+
+bool _pd_queue_event(struct pd_inputevent *src)
+{
+    return queue_try_add(&pd_input_queue, src);
+}
 
 void sendhook(HeavyContextInterface *context, const char *sendName, hv_uint32_t sendHash, const HvMessage *msg)
 {
@@ -112,6 +119,8 @@ void pd_init()
 {
     printf("Initializing heavy patch.\n");
 
+    queue_init(&pd_input_queue, sizeof(struct pd_inputevent), 40);
+
     hvy = hv_sequencerpatch_new_with_options(8000.0f, 10, 2, 2);
 
     hv_setPrintHook(hvy, printhook);
@@ -174,32 +183,25 @@ void pd_init()
 
 void pd_send_knobturn(uint8_t index, int16_t delta)
 {
+    struct pd_inputevent evt;
+    evt.type = eventtype_knob;
+    evt.index = index;
+    evt.knobdelta = delta;
+    _pd_queue_event(&evt);
+}
+
+void _pd_process_knobturn(uint8_t index, int16_t delta)
+{
     uint32_t hash = hv_stringToHash("tbd_knob");
     HvMessage *msg1 = (HvMessage *)hv_alloca(hv_msg_getByteSize(3));
     hv_msg_init(msg1, 3, 0);
     hv_msg_setSymbol(msg1, 0, "turn");
     hv_msg_setFloat(msg1, 1, index);
-    // if (index == 0)
-    // {
-    //     hv_msg_setSymbol(msg1, 1, "knob0");
-    // }
-    // else if (index == 1)
-    // {
-    //     hv_msg_setSymbol(msg1, 1, "knob1");
-    // }
-    // else if (index == 2)
-    // {
-    //     hv_msg_setSymbol(msg1, 1, "knob2");
-    // }
-    // else // if (index == 3)
-    // {
-    //     hv_msg_setSymbol(msg1, 1, "knob3");
-    // }
     hv_msg_setFloat(msg1, 2, delta);
     hv_sendMessageToReceiver(hvy, hash, 0, msg1);
 }
 
-void pd_send_knobbutton(uint8_t index, enum pd_buttonevent event)
+void _pd_process_knobbutton(uint8_t index, enum pd_buttonevent event)
 {
     uint32_t hash = hv_stringToHash("tbd_knob");
     HvMessage *msg1 = (HvMessage *)hv_alloca(hv_msg_getByteSize(2));
@@ -220,7 +222,16 @@ void pd_send_knobbutton(uint8_t index, enum pd_buttonevent event)
     hv_sendMessageToReceiver(hvy, hash, 0, msg1);
 }
 
-void pd_send_stepbutton(uint8_t index, enum pd_buttonevent event)
+void pd_send_knobbutton(uint8_t index, enum pd_buttonevent event)
+{
+    struct pd_inputevent evt;
+    evt.type = eventtype_knobbutton;
+    evt.index = index;
+    evt.buttonevent = event;
+    _pd_queue_event(&evt);
+}
+
+void _pd_process_stepbutton(uint8_t index, enum pd_buttonevent event)
 {
     uint32_t hash = hv_stringToHash("tbd_knob");
     HvMessage *msg1 = (HvMessage *)hv_alloca(hv_msg_getByteSize(2));
@@ -243,7 +254,16 @@ void pd_send_stepbutton(uint8_t index, enum pd_buttonevent event)
     hv_sendMessageToReceiver(hvy, hash, 0, msg1);
 }
 
-void pd_send_funcbutton(uint8_t index, enum pd_buttonevent event)
+void pd_send_stepbutton(uint8_t index, enum pd_buttonevent event)
+{
+    struct pd_inputevent evt;
+    evt.type = eventtype_stepbutton;
+    evt.index = index;
+    evt.buttonevent = event;
+    _pd_queue_event(&evt);
+}
+
+void _pd_process_funcbutton(uint8_t index, enum pd_buttonevent event)
 {
     uint32_t hash = hv_stringToHash("tbd_func");
     HvMessage *msg1 = (HvMessage *)hv_alloca(hv_msg_getByteSize(2));
@@ -264,7 +284,16 @@ void pd_send_funcbutton(uint8_t index, enum pd_buttonevent event)
     hv_sendMessageToReceiver(hvy, hash, 0, msg1);
 }
 
-void pd_send_navturn(int16_t delta)
+void pd_send_funcbutton(uint8_t index, enum pd_buttonevent event)
+{
+    struct pd_inputevent evt;
+    evt.type = eventtype_funcbutton;
+    evt.index = index;
+    evt.buttonevent = event;
+    _pd_queue_event(&evt);
+}
+
+void _pd_process_navturn(int16_t delta)
 {
     uint32_t hash = hv_stringToHash("tbd_nav");
     HvMessage *msg1 = (HvMessage *)hv_alloca(hv_msg_getByteSize(2));
@@ -274,7 +303,16 @@ void pd_send_navturn(int16_t delta)
     hv_sendMessageToReceiver(hvy, hash, 0, msg1);
 }
 
-void pd_send_navbutton(enum pd_buttonevent event)
+void pd_send_navturn(int16_t delta)
+{
+    struct pd_inputevent evt;
+    evt.type = eventtype_navknob;
+    evt.index = 0;
+    evt.knobdelta = delta;
+    _pd_queue_event(&evt);
+}
+
+void _pd_process_navbutton(enum pd_buttonevent event)
 {
     uint32_t hash = hv_stringToHash("tbd_nav");
     HvMessage *msg1 = (HvMessage *)hv_alloca(hv_msg_getByteSize(1));
@@ -294,7 +332,16 @@ void pd_send_navbutton(enum pd_buttonevent event)
     hv_sendMessageToReceiver(hvy, hash, 0, msg1);
 }
 
-void pd_send_midiin(uint8_t *buffer, uint8_t length)
+void pd_send_navbutton(enum pd_buttonevent event)
+{
+    struct pd_inputevent evt;
+    evt.type = eventtype_navbutton;
+    evt.index = 0;
+    evt.buttonevent = event;
+    _pd_queue_event(&evt);
+}
+
+void _pd_process_midiin(uint8_t *buffer, uint8_t length)
 {
     // uint32_t hash = hv_stringToHash("__hv_notein");
     // HvMessage *msg1 = (HvMessage *)hv_alloca(hv_msg_getByteSize(3));
@@ -305,18 +352,76 @@ void pd_send_midiin(uint8_t *buffer, uint8_t length)
     // hv_sendMessageToReceiver(hvy, hash, 0, msg1);
 }
 
+void pd_send_midiin(uint8_t *buffer, uint8_t length)
+{
+    if (length > 4)
+    {
+        printf("too big midi message.\n");
+        return;
+    }
+
+    struct pd_inputevent evt;
+    evt.type = eventtype_midiinput;
+    evt.midilength = length;
+    memcpy(evt.mididata, buffer, length);
+    _pd_queue_event(&evt);
+}
+
+bool pd_handle_event(struct pd_inputevent *src)
+{
+    return _pd_queue_event(src);
+}
+
 void pd_tick()
 {
     static uint32_t lasttick = 0;
 
     uint32_t T = time_us_32();
     uint32_t DT = T - lasttick;
-    if (DT < 8000) // 1000000us / (8000hz / 64samples)
+    if (DT < 16000) // 1000000us / (16000hz / 128samples)
     {
         return;
     }
 
     lasttick = T;
 
-    hv_process(hvy, &inputbuffer, &outputbuffer, 64);
+    int numevents = 0;
+    struct pd_inputevent evt;
+    while (queue_try_remove(&pd_input_queue, &evt))
+    {
+        printf("process event type %d\n", evt.type);
+
+        switch (evt.type)
+        {
+        case eventtype_funcbutton:
+            _pd_process_funcbutton(evt.index, evt.buttonevent);
+            break;
+        case eventtype_knob:
+            _pd_process_knobturn(evt.index, evt.knobdelta);
+            break;
+        case eventtype_knobbutton:
+            _pd_process_knobbutton(evt.index, evt.buttonevent);
+            break;
+        case eventtype_navbutton:
+            _pd_process_navbutton(evt.buttonevent);
+            break;
+        case eventtype_navknob:
+            _pd_process_navturn(evt.knobdelta);
+            break;
+        case eventtype_midiinput:
+            _pd_process_midiin(&evt.mididata, evt.midilength);
+            break;
+        case eventtype_stepbutton:
+            _pd_process_stepbutton(evt.index, evt.buttonevent);
+            break;
+        }
+        numevents++;
+    }
+
+    if (numevents > 0)
+    {
+        printf("should handle %d events.\n", numevents);
+    }
+
+    hv_process(hvy, &inputbuffer, &outputbuffer, 128);
 };
