@@ -59,6 +59,12 @@ static inline hv_size_t msg_getCoreSize(hv_size_t numElements) {
   return sizeof(HvMessage) + ((numElements-1) * sizeof(Element));
 }
 
+static inline hv_size_t msg_getSymbolSize(const char *s) {
+  uint32_t symbolsize = (hv_uint16_t) hv_strlen(s) + 1; // include trailing null
+  symbolsize = hv_align_size(symbolsize);
+  return symbolsize;
+}
+
 HvMessage *msg_copy(const HvMessage *m);
 
 /** Copies the message into the given buffer. The buffer must be at least as large as msg_getNumHeapBytes(). */
@@ -151,9 +157,7 @@ static inline void msg_setSymbol(HvMessage *m, int index, const char *s) {
   (&(m->elem)+index)->data.s = s;
   // NOTE(mhroth): if the same message container is reused and string reset,
   // then the message size will be overcounted
-  uint32_t symbolsize = (hv_uint16_t) hv_strlen(s) + 1;
-  symbolsize = hv_align_size(symbolsize);
-  m->numBytes += symbolsize; // (hv_uint16_t) (hv_strlen(s) + 1); // also count '\0'
+  m->numBytes += msg_getSymbolSize(s);
 }
 
 static inline const char *msg_getSymbol(const HvMessage *m, int index) {

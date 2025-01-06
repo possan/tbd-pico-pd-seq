@@ -44,6 +44,10 @@ extern "C" {
 #endif
 
 
+typedef enum {
+  HV_SEQUENCERPATCH_PARAM_OUT_TBD_STEPLED = 0xBD7A3EC7, // tbd_stepled
+} Hv_sequencerpatch_ParameterOut;
+
 
 /**
  * Creates a new patch instance.

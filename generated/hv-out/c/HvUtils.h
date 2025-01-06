@@ -213,8 +213,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void hv_assert_aligned(void *ptr);
-void *hv_align_pointer(void *inputptr);
 uint32_t hv_align_size(uint32_t inputsize);
 #ifdef __cplusplus
 }
