@@ -35,7 +35,7 @@ void sendhook(HeavyContextInterface *context, const char *sendName, hv_uint32_t 
         int vel = (int)hv_msg_getFloat(msg, 1);
         int chan = (int)hv_msg_getFloat(msg, 2);
 
-        printf("> received note out \"%s\" (%f %f %f).\n", sendName, note, vel, chan);
+        // printf("> received note out \"%s\" (%02x %02x %02x).\n", sendName, note, vel, chan);
 
         uint8_t midibuf[10] = {
             0,
@@ -235,7 +235,7 @@ void _pd_process_stepbutton(uint8_t index, enum pd_buttonevent event)
 {
     uint32_t hash = hv_stringToHash("tbd_knob");
     HvMessage *msg1 = (HvMessage *)hv_alloca(hv_msg_getByteSize(2));
-    printf("msg1=%X\n", msg1);
+    // printf("msg1=%X\n", msg1);
     hv_msg_init(msg1, 2, 0);
     if (event == button_press)
     {
@@ -389,7 +389,7 @@ void pd_tick()
     struct pd_inputevent evt;
     while (queue_try_remove(&pd_input_queue, &evt))
     {
-        printf("process event type %d\n", evt.type);
+        // printf("process event type %d\n", evt.type);
 
         switch (evt.type)
         {
@@ -415,12 +415,6 @@ void pd_tick()
             _pd_process_stepbutton(evt.index, evt.buttonevent);
             break;
         }
-        numevents++;
-    }
-
-    if (numevents > 0)
-    {
-        printf("should handle %d events.\n", numevents);
     }
 
     hv_process(hvy, &inputbuffer, &outputbuffer, 128);
