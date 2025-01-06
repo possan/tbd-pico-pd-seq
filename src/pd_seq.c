@@ -132,7 +132,7 @@ void pd_init()
     hLp_init(&lp1, 1000);
     for (int k = 0; k < 300; k++)
     {
-        printf("  %d\n", k);
+        // printf("  %d\n", k);
         if ((rand() % 6) < 4)
         {
             const uint32_t size = 4 + (4 * (rand() % 30));
@@ -143,12 +143,12 @@ void pd_init()
             {
                 // p->receiverHash = sendHash;
                 // msg_copyToBuffer(msg, (char *)&p->msg, msg_getSize(msg));
-                printf("    produced %d bytes at 0x%X\n", numBytes, p);
+                // printf("    produced %d bytes at 0x%X\n", numBytes, p);
                 hLp_produce(&lp1, numBytes);
             }
             else
             {
-                printf("    hLp_getWriteBuffer returned NULL\n");
+                // printf("    hLp_getWriteBuffer returned NULL\n");
             }
         }
         if ((rand() % 6) < 2)
@@ -158,12 +158,12 @@ void pd_init()
             {
                 hv_uint32_t numBytes = 0;
                 uint8_t *p = hLp_getReadBuffer(&lp1, &numBytes);
-                printf("    consumed %d/%d bytes at 0x%X\n", numBytes, avail, p);
+                // printf("    consumed %d/%d bytes at 0x%X\n", numBytes, avail, p);
                 hLp_consume(&lp1);
             }
             else
             {
-                printf("    hLp_hasData returned nothing\n");
+                // printf("    hLp_hasData returned nothing\n");
             }
         }
     }

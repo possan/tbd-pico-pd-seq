@@ -162,8 +162,6 @@ int main()
 
     shared_i2c_init(); // i2c used by both ui and display
 
-    // sleep_ms(300);
-
     printf("Pico started.\n");
 
     // multicore_reset_core1(); // debugger fix: https://github.com/raspberrypi/debugprobe/issues/62
