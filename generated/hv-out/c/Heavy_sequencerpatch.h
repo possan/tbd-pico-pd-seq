@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Enzien Audio, Ltd.
+ * Copyright (c) 2025 Enzien Audio, Ltd.
  * 
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -43,11 +43,6 @@ extern "C" {
 #pragma mark - Heavy Context
 #endif
 
-
-typedef enum {
-  HV_SEQUENCERPATCH_PARAM_OUT___HV_NOTEOUT = 0xD1D4AC2, // __hv_noteout
-  HV_SEQUENCERPATCH_PARAM_OUT_TBD_STEPLED = 0xBD7A3EC7, // tbd_stepled
-} Hv_sequencerpatch_ParameterOut;
 
 
 /**
